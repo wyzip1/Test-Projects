@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事件执行log</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .drag,
+    .drag-c {
+      width: 60px;
+      height: 60px;
+      background-color: orange;
+      border-radius: 4px;
+      color: #fff;
+      text-align: center;
+      line-height: 60px;
+      font-size: 12px;
+    }
+
+    .drop {
+      width: 300px;
+      height: 300px;
+      border: 1px solid orange;
+      display: grid;
+      place-items: center;
+    }
+
+    .children-drop {
+      width: 100px;
+      height: 100px;
+      background-color: rgb(255, 141, 100);
+    }
+
+    .drag-container {
+      display: grid;
+      place-items: center;
+      row-gap: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="drag-container">
+    <div class="drag-c" draggable="true">拖拽换图</div>
+    <div class="drag" draggable="true"></div>
+  </div>
+  <div class="drop">
+    <div class="children-drop"></div>
+  </div>
+
+  <script>
+    const drag = document.querySelector('.drag');
+    const drop = document.querySelector('.drop');
+    const dragC = document.querySelector('.drag-c');
+
+    drag.addEventListener('dragstart', ev => {
+      console.log('dragstart');
+      ev.dataTransfer.setData('text/plain', 'test');
+      console.log(ev.dataTransfer.items);
+      console.log(ev.dataTransfer.types);
+
+      // ev.dataTransfer.items[0].getAsString(data => {
+      //   console.log(data);
+      // });
+
+      
+    })
+
+    const img = document.createElement('img');
+    img.src = './t.jpg';
+    let w, h;
+    img.onload = function() {
+      w = img.width;
+      h = img.height;
+    }
+    dragC.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setDragImage(img, (w/2), (h/2));
+    })
+
+    drag.addEventListener('dragend', ev => {
+      console.log('dragend');
+    })
+
+    drop.addEventListener('dragover', ev => {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = 'copy'
+    })
+
+    drop.addEventListener('drop', ev => {
+      ev.preventDefault();
+      console.log(ev.dataTransfer.getData('text/plain'));
+      console.log('drop');
+      console.log(ev.dataTransfer.files);
+    });
+    drop.addEventListener('dragenter', ev => {
+      console.log('dragenter', ev.target);
+    })
+    drop.addEventListener('dragleave', ev => {
+      console.log('dragleave', ev.target);
+    })
+  </script>
+</body>
+
+</html>

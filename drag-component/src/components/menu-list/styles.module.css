@@ -1,0 +1,15 @@
+.menuList {
+  width: 188px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.grid-template {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.select-collapse {
+  padding: 0 11px;
+}

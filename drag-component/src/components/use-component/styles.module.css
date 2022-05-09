@@ -1,0 +1,24 @@
+.use-component {
+  width: 80px;
+  height: 88px;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-family: PingFangSC-Regular,PingFang SC;
+  font-weight: 400;
+  color: #323233;
+  user-select: none;
+  cursor: move;
+}
+
+.use-component:hover {
+  background-color: #155bd4;
+  color: #fff;
+}
+
+.icon {
+  font-size: 32px;
+}

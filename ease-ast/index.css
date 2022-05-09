@@ -1,0 +1,11 @@
+.label {
+  user-select: none;
+  cursor: pointer;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  gap: 15px;
+}

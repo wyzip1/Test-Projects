@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+    <div id="container">
+      <h3>{title}</h3>
+      {#testArr}
+        <span>{.}</span>
+      {/testArr}
+      <ol>
+        {#arr}
+          <li>
+            学生是{name}的爱好是
+            <ol>
+              {#hobbies}
+                <li>{.}</li>
+              {/hobbies}
+            </ol>
+            <p>卡号：{cardInfo.no}; 卡行：{cardInfo.name}}</p>
+            <hr />
+          </li>
+        {/arr}
+      </ol>
+    </div>
+  </script>
+
+  <script type="module">
+    import render from "./render.js";
+    import guid from './uuid.js'
+
+    const data = {
+      arr: [
+        { name: '小明', hobbies: ['跳舞', '唱歌'], cardInfo: { no: guid(), name: '农业银行' } },
+        { name: '小红', hobbies: ['玩游戏', '睡觉', '看书'], cardInfo: { no: guid(), name: '招商银行' } },
+        { name: '小墙', hobbies: ['阿巴阿巴'], cardInfo: { no: guid(), name: '工商银行' } }
+      ],
+      title: 'TEST-标题',
+      testArr: [1, 2, 3, 4, 5, 6, 7]
+    };
+    const container = document.getElementById('container');
+    const templateStr = container.innerHTML;
+
+    const html = render(templateStr, data);
+
+    container.innerHTML = html;
+  </script>
+</body>
+
+</html>

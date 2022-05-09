@@ -1,0 +1,59 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: #fff;
+}
+
+.content_phone {
+  flex: 1;
+  min-width: 568px;
+  background: #f7f8fa;
+  /* display: flex;
+  justify-content: center; */
+  position: relative;
+  overflow-y: auto;
+}
+
+.phone {
+  display: inline-block;
+  width: 375px;
+  min-height: 667px;
+  background-color: #fff;
+  margin: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 24px;
+}
+
+.phone .header {
+  height: 64px;
+  width: 100%;
+}
+
+.phone .header img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.zhanwei {
+  width: 100%;
+  height: 50px;
+  background-color: #d4e5ff;
+  border: 2px solid #6ea3ff;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+}
+
+.zhanwei-txt {
+  display: inline-block;
+  background-color: #6ea3ff;
+  color: #fff;
+  padding: 5px 15px;
+}
+
+.editor {
+  min-width: 376px;
+}

@@ -1,0 +1,86 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 60vw;
+  height: 60vh;
+  margin: 20vh auto 0;
+  display: grid;
+  place-items: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  box-sizing: border-box;
+}
+
+.draggable-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.drop-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.draggable.dragging {
+  background-color: #ca92ff;
+}
+
+.draggable,
+.dropable {
+  border-radius: 4px;
+}
+
+.draggable {
+  width: 25vh;
+  height: 25vh;
+  background-color: #92b8ff;
+  /* transition: .3s; */
+}
+
+.dropFile,
+.dropable {
+  width: 26vh;
+  height: 26vh;
+  border: 8px dashed #92b8ff;
+  display: grid;
+  place-items: center;
+}
+
+.dropable::before,
+.dropFile::before {
+  content: "请放置图片文件";
+  position: absolute;
+  z-index: -1;
+  font-size: 25px;
+  font-weight: bold;
+  color: #e2e2e2;
+  letter-spacing: 4px;
+}
+
+.dropable::before {
+  content: "请放置元素";
+}
+
+.dropFile.active,
+.dropable.active {
+  border-color: #7ef36f;
+}
+
+.dropFile.over,
+.dropable.over {
+  border-color: orange;
+  background-color: rgba(255, 166, 0, 0.226);
+}
+
+.image {
+  width: 25vh;
+  object-fit: cover;
+}

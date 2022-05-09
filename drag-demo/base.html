@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>基础演示 - base</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .draggable,
+    .dropable {
+      width: 300px;
+      height: 300px;
+      border-radius: 5px;
+    }
+
+    .draggable {
+      background-color: #92b8ff;
+    }
+
+    .dropable {
+      min-height: 300px;
+      height: unset;
+      padding: 5px;
+      border: 6px dashed #92b8ff;
+      display: grid;
+      place-items: center;
+      row-gap: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="drag-container">
+    <div draggable="true" id="draggable" class="draggable"></div>
+  </div>
+  <div class="dropable" id="dropable"></div>
+
+
+  <script>
+    const draggable = document.getElementById('draggable');
+    const dropable = document.getElementById('dropable');
+
+    draggable.addEventListener('dragstart', dragStart);
+    dropable.addEventListener('dragover', dragOver);
+    dropable.addEventListener('drop', drop);
+
+    function dragStart(ev) {
+      console.log('start');
+      ev.dataTransfer.setData('text/plain', ev.target.id);
+    }
+
+    function dragOver(ev) {
+      ev.preventDefault();
+    }
+
+    function drop(ev) {
+      console.log(ev.target);
+      const id = ev.dataTransfer.getData('text/plain', ev.target.id);
+      const el = document.getElementById(id).cloneNode();
+      // const el = document.getElementById(id);
+      dropable.appendChild(el);
+    }
+  </script>
+
+</body>
+
+</html>

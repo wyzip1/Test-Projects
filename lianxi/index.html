@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app"></div>
+  
+  <script type="module">
+    import parseHtml from './index.js'
+    import { createVNode, patch } from './Study-diff-VNode/utils/index.js'
+    const html = `
+      <div class="test">
+        <input />
+        <h1 dara-asd="asd" asa asda="asf">TEST - 标题</h1>
+        <ul>
+          <li>A</li>
+          <li>B</li>
+          <li>C</li>
+        </ul>
+      </div>`;
+
+    const renderHTML = render(html)
+    function render(template) {
+      const AST = parseHtml(template)
+      console.log('AST', AST);
+      function createVNTree(node) {
+        let vNode
+        if(node.type === 1) {
+          const chList = node.children?.map(item => createVNTree(item))
+          vNode = createVNode(node.tag, node.attrs, chList?.length === 1 ? chList[0] : chList)
+        } else if(node.type === 3) {
+          vNode = node.text
+        }
+        return vNode
+      }
+      return createVNTree(AST)
+    }
+    console.log(renderHTML);
+    patch(app, renderHTML)
+  </script>
+</body>
+</html>

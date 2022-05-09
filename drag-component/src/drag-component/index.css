@@ -1,0 +1,8 @@
+.zent-collapse-panel__content-box,
+.zent-collapse-panel__title.zent-collapse-panel__title--bg-none {
+  border: none !important;
+}
+
+.zent-collapse-panel__content-box.zent-collapse-panel__content-box {
+  padding: 0 !important;
+}
