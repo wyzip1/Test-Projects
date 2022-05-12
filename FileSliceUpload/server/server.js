@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
-
-const { IncomingForm } = require('formidable')
-const { fileQueueAdd, handleLastUpload } = require('./uploadFileHanlde')
+const HandleSliceFile = require('receive-slice-file-combin')
 
 app.engine('html', require('ejs').__express)
 app.set('view engine', 'html');
@@ -28,15 +26,15 @@ app.get('/', (_, res) => {
 })
 
 app.post('/uploadFile', (req, res) => {
-  const form = new IncomingForm({ uploadDir: './upload' });
-  form.parse(req, (err, _, { file }) => {
+  const fileUid = req.headers['file-uid']
+  const fileIndex = req.headers['file-index']
+  const isLast = req.headers['upload-end'] === 'isLast'
+  const handle = new HandleSliceFile({ uploadDir: './upload', uid: fileUid, index: fileIndex })
+
+  handle.parse(req, isLast, (err, file, url) => {
     if (err) return console.log(err);
     const responseJson = { success: true, file }
-    const fileUid = req.headers['file-uid']
-    const fileIndex = req.headers['file-index']
-    fileQueueAdd(fileUid, file, fileIndex)
-    const isLast = req.headers['upload-end'] === 'isLast'
-    if (isLast) responseJson.url = handleLastUpload(file, fileUid)
+    url && (responseJson.url = url)
     res.json(responseJson)
   })
 })

@@ -1,5 +1,5 @@
 <template>
-  <Upload v-model="fileList" :sliceSize="1024 / 10" @upload="upload"  />
+  <Upload v-model="fileList" :sliceSize="1024 * 100" @upload="upload"  />
 </template>
 
 <script setup>
