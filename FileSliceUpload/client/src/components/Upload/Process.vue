@@ -1,10 +1,11 @@
 <template>
-  <div class="process" :style="`--process-width: ${props.process}%`"></div>
+  <div :class="{process: true, disabled}" :style="`--process-width: ${props.process}%`"></div>
 </template>
 
 <script setup>
 const props = defineProps({
-  process: { type: Number, default: 0 }
+  process: { type: Number, default: 0 },
+  disabled: { type: Boolean, default: false }
 })
 </script>
 
@@ -15,6 +16,10 @@ const props = defineProps({
   width: 100%;
   background-color: #d9d9d9;
   border-radius: 5px;
+
+  &.disabled::before {
+    background-color: gray;
+  }
 
   &::before {
     content: '';

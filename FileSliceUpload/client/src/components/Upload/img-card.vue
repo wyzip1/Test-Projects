@@ -5,9 +5,9 @@
       <img :src="imgSvg" />
       <div>image.png</div>
     </span>
-    <span v-else-if="props.state === 1">
-      <div style="margin-bottom: 10px;">文件上传中</div>
-      <Process :process="props.process" />
+    <span v-else-if="[1, 4].includes(props.state)">
+      <div style="margin-bottom: 10px;">{{ props.state === 4 ? '上传暂停' : '文件上传中'}}</div>
+      <Process :process="props.process" :disabled="props.state === 4" />
     </span>
     <div class="mask" v-if="props.state !== 1">
       <span @click="emits('look')">查看</span>

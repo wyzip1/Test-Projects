@@ -1,5 +1,5 @@
 <template>
-  <Upload v-model="fileList" :sliceSize="1024" @upload="upload"  />
+  <Upload v-model="fileList" :sliceSize="1024 / 10" @upload="upload"  />
 </template>
 
 <script setup>
@@ -7,19 +7,22 @@ import Upload from './components/Upload'
 import { ref } from 'vue'
 
 const fileList = ref([]);
-function upload({ formData, isLast, fileUid }, next) {
+function upload({ index, formData, isLast, fileUid, signal }, next) {
   fetch('http://localhost:3000/uploadFile', {
     method: 'POST',
     body: formData,
     headers: { 
-      fileuid: fileUid,
-      uploadend: isLast ? 'isLast' : 'continue'
-    }
+      ['file-uid']: fileUid,
+      ['upload-end']: isLast ? 'isLast' : 'continue',
+      ['file-index']: index
+    },
+    signal
   }).then(res => res.json()).then(res => {
-    isLast && console.log(res);
+    isLast && open(res.url)
     next();
   }).catch(err => {
     console.log('uploadSliceFile Error', err);
+    if(err.code === 20) return next('pause')
     next(false)
   })
 }

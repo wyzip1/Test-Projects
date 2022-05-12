@@ -18,13 +18,13 @@
       </div>
     </div>
     <div class="file-list">
-      <div :class="{ file: true, fail: file.success === false, success: file.success }" v-for="file in fileList" :key="file.uid">
+      <div :class="{ file: true, fail: file.success === false, success: file.success === true, pause: file.uploadState === 4 }" v-for="file in fileList" :key="file.uid">
         <a :href="file.href" target="_blank">{{ file.name }}</a>
         <div class="right" @click="fileListRemove(file)" v-if="!file.success">删除</div>
-        <Process class="absolute-left-bottom" v-if="file === uploadFile" :process="uploadIndex / uploadTotal * 100" />
+        <Process class="absolute-left-bottom" :disabled="file.uploadState === 4" v-if="file === uploadFile" :process="uploadIndex / uploadTotal * 100" />
       </div>
     </div>
-    <Button class="upload-btn" :disabled="props.modelValue.length < 1" @click="dispatchUpload">上传</Button>
+    <Button class="upload-btn" :disabled="props.modelValue.filter(file => file.success !== true).length < 1" @click="uploadControl.fn">{{uploadControl.text}}</Button>
   </section>
 </template>
 
@@ -32,7 +32,7 @@
 import Button from './Button.vue'
 import ImgCard from './img-card.vue'
 import Process from './Process.vue'
-import { ref, watch, getCurrentInstance } from 'vue'
+import { ref, watch, getCurrentInstance, computed } from 'vue'
 import { sliceFile } from './utils'
 
 let { ctx } = getCurrentInstance()
@@ -50,11 +50,22 @@ const inputFile = ref();
 
 const uploadIndex = ref(0)
 const uploadFile = ref()
+const uploadFileIndex = ref(0)
 const uploadTotal = ref(1)
+
+const controlAbort = ref(new AbortController())
+const requestSignal = ref(controlAbort.value.signal)
+const isPause = ref(false)
 
 watch(props, ({ modelValue }) => {
   imgFileList.value = modelValue.filter(file => file.fileType === 'image')
   fileList.value = modelValue.filter(file => file.fileType !== 'image')
+})
+
+const uploadControl = computed(() => {
+  if(!uploadFile.value) return { text: '上传', fn: dispatchUpload }
+  if(isPause.value) return { text: '继续', fn: uploadContinue }
+  return { text: '暂停', fn: pause }
 })
 
 function changeFile(e) {
@@ -83,25 +94,34 @@ function fileListRemove(file) {
 }
 
 function dispatchUpload() {
-  uploadHandle([...imgFileList.value, ...fileList.value])
+  const needUploadFileList = [...imgFileList.value, ...fileList.value].filter(file => file.success !== true)
+  uploadHandle(needUploadFileList)
 }
 
 function uploadHandle(fileList, fileIndex = 0) {
-  if (fileIndex === fileList.length) return uploadFile.value = null;
+  if (fileIndex === fileList.length) {
+    uploadFile.value = null;
+    uploadFileIndex.value = 0;
+    isPause.value = false;
+    return
+  }
   const file = fileList[fileIndex]
-  const fileUid = guid()
+  if(!file.uid) file.uid = guid()
+  uploadFileIndex.value = fileIndex
   uploadFile.value = file;
   uploadIndex.value = file.uploadIndex || 0
   uploadTotal.value = Math.ceil(file.size / props.sliceSize);
   file.uploadState = 1;
-  doUpload(file, uploadIndex.value, fileUid, (isSuccess = true) => {
-    file.success = isSuccess
-    ctx.$forceUpdate()
-    file.uploadState = isSuccess ? 2 : 3
+  ctx.$forceUpdate()
+  doUpload(file, uploadIndex.value, file.uid, (state = true) => {
+    const uploadStateMap = { [true]: 2, [false]: 3, pause: 4 }
+    file.success = state
+    file.uploadState = uploadStateMap[state] 
     file.uploadIndex = uploadIndex.value
     ctx.$forceUpdate()
-    uploadIndex.value = 0;
-    uploadTotal.value = 0
+    if(state === 'pause') return
+    uploadIndex.value = 0
+    uploadTotal.value = 1
     uploadHandle(fileList, fileIndex + 1)
   })
 }
@@ -110,11 +130,25 @@ function doUpload(file, startIndex = 0, fileUid, next) {
   const { blobFile, isLast } = sliceFile(file, startIndex, props.sliceSize)
   const formData = new FormData()
   formData.append('file', blobFile)
-  emits('upload', { formData, isLast, fileUid }, (isSuccess) => {
-    uploadIndex.value = startIndex + 1;
-    if (isLast || isSuccess === false) return next(isSuccess)
+  emits('upload', { index: startIndex, formData, isLast, fileUid, signal: requestSignal.value }, (state = true) => {
+    console.log('当前上传分片:', `${startIndex + 1} / ${uploadTotal.value}`)
+    uploadIndex.value = startIndex
+    if (isLast || [false, 'pause'].includes(state)) return next(state)
     doUpload(file, startIndex + 1, fileUid, next)
   })
+}
+
+function pause() {
+  controlAbort.value.abort()
+  controlAbort.value = new AbortController()
+  requestSignal.value = controlAbort.value.signal
+  isPause.value = true;
+}
+
+function uploadContinue() {
+  isPause.value = false;
+  const needUploadFileList = [...imgFileList.value, ...fileList.value].filter(file => file.success !== true)
+  uploadHandle(needUploadFileList)
 }
 
 function guid() {
@@ -201,6 +235,12 @@ function guid() {
     &.success>.right,
     &.success>.right:hover {
       color: #52c41a;
+    }
+
+    &.pause>a,
+    &.pause>.right,
+    &.pause>.right:hover {
+      color: gray;
     }
 
     &>a {

@@ -20,11 +20,17 @@ function parseFileName(file) {
   return [filename, ext]
 }
 
-exports.fileQueueAdd = function(uid, file) {
+exports.fileQueueAdd = function(uid, file, index = -1) {
     !fileCaches[uid] && (fileCaches[uid] = [])
     const fileList = fileCaches[uid]
     file.filePath = resolve(__dirname, 'upload', file.newFilename)
-    fileList.push(file)
+    if(index === -1) return fileList.push(file)
+    const originFile = fileList[index];
+    fileList[index] = file
+    if(originFile && originFile.filePath !== file.filePath) {
+      fs.unlinkSync(originFile.filePath)
+    }
+    
 }
 
 exports.handleLastUpload = function(file, uid) {

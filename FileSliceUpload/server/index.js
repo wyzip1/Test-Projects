@@ -8,7 +8,7 @@ function uploadFile(el) {
   const file = el.files[0];
   uploadOriginFile = file
   fileUid = guid();
-  uploadSlice(file, 1024 * 100)
+  uploadSlice(file, 1024 / 10)
 }
 
 function uploadSlice(file, sliceSize = 1024, startIndex = 0) {

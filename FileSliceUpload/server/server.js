@@ -14,7 +14,7 @@ app.all('*', (req, res, next) => {
   //设置允许跨域的域名，*代表允许任意域名跨域
   res.header("Access-Control-Allow-Origin", "*");
   //允许的header类型
-  res.header("Access-Control-Allow-Headers","content-type,fileuid,uploadend");
+  res.header("Access-Control-Allow-Headers","content-type,file-uid,upload-end,file-index");
   //跨域允许的请求方式
   res.header("Access-Control-Allow-Methods","DELETE,PUT,POST,GET,OPTIONS");
   if (req.method.toLowerCase() == 'options')
@@ -30,11 +30,12 @@ app.get('/', (_, res) => {
 app.post('/uploadFile', (req, res) => {
   const form = new IncomingForm({ uploadDir: './upload' });
   form.parse(req, (err, _, { file }) => {
-    if (err) throw err
+    if (err) return console.log(err);
     const responseJson = { success: true, file }
-    const fileUid = req.headers['fileuid']
-    fileQueueAdd(fileUid, file)
-    const isLast = req.headers['uploadend'] === 'isLast'
+    const fileUid = req.headers['file-uid']
+    const fileIndex = req.headers['file-index']
+    fileQueueAdd(fileUid, file, fileIndex)
+    const isLast = req.headers['upload-end'] === 'isLast'
     if (isLast) responseJson.url = handleLastUpload(file, fileUid)
     res.json(responseJson)
   })
