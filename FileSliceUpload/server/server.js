@@ -29,12 +29,12 @@ app.post('/uploadFile', (req, res) => {
   const fileUid = req.headers['file-uid']
   const fileIndex = req.headers['file-index']
   const isLast = req.headers['upload-end'] === 'isLast'
-  const handle = new HandleSliceFile({ uploadDir: './upload', uid: fileUid, index: fileIndex })
+  const handle = new HandleSliceFile({ catchDir: './upload', uploadDir: './files', uid: fileUid, index: fileIndex })
 
-  handle.parse(req, isLast, (err, file, url) => {
+  handle.parse(req, isLast, (err, file, path) => {
     if (err) return console.log(err);
     const responseJson = { success: true, file }
-    url && (responseJson.url = url)
+    path && (responseJson.url = 'http://localhost:3000/' + path)
     res.json(responseJson)
   })
 })
